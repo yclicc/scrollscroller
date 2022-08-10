@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.8"></script>
+  <style>.vega-embed {
+    width: 100%;
+    height: 100%;
+  }
+  </style>
+</head>
+<body>
+  <div id="vis" />
+  <script>
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/yclicc/scrollscroller/main/data/bibledata.json"
+  },
+  "title": {
+    "text": "Bible Overview",
+    "subtitle": "Hover over top chart to zoom in on bottom. Click bottom chart to open on BibleGateway. (Shift-click to open in new tab)."
+  },
+  "transform": [
+    {
+      "calculate": "if(oldtestamentorder == toString('Christian Traditional'), datum.verse_index, datum.hebrew_verse_index)",
+      "as": "display_verse_index"
+    },
+    {
+      "calculate": "datum.display_verse_index - datum.verses",
+      "as": "start_verse"
+    },
+    {
+      "calculate": "(datum.book_index % 10) * 2 + (datum.chapter + 1) % 2",
+      "as": "chapter_color"
+    },
+    {
+      "calculate": "'https://www.biblegateway.com/passage/?search=' + datum.title + '&version=' + bibleversion",
+      "as": "url"
+    }
+  ],
+  "params": [
+    {
+      "name": "oldtestamentorder",
+      "bind": {
+        "name": "Old Testament Order ",
+        "input": "select",
+        "options": ["Christian Traditional", "Hebrew TaNaKh"]
+      }
+    },
+    {
+      "name": "bibleversion",
+      "bind": {"name": "Bible Version Link ", "input": "text"},
+      "value": "NIVUK"
+    },
+    {
+      "name": "hover",
+      "select": {
+        "type": "point",
+        "on": "mouseover",
+        "encodings": ["x"],
+        "fields": ["book"],
+        "clear": false
+      },
+      "value": -10000,
+      "views": ["broad"]
+    },
+    {"name": "focusradius", "value": 300},
+    {
+      "name": "hoverextents",
+      "expr": "[toNumber(hover.start_verse) - focusradius, toNumber(hover.start_verse) + focusradius]"
+    }
+  ],
+  "vconcat": [
+    {
+      "name": "broad",
+      "width": "container",
+      "height": 50,
+      "mark": {"type": "bar", "height": {"band": 1}},
+      "encoding": {
+        "x": {
+          "field": "start_verse",
+          "type": "quantitative",
+          "title": "Verse",
+          "scale": {"domainMax": 30540},
+          "axis": null
+        },
+        "x2": {"field": "display_verse_index", "type": "quantitative"},
+        "color": {
+          "field": "chapter_color",
+          "type": "nominal",
+          "sort": null,
+          "legend": null,
+          "scale": {"scheme": "category20"}
+        },
+        "tooltip": [{"field": "title", "type": "nominal"}]
+      }
+    },
+    {
+      "width": "container",
+      "height": 50,
+      "title": {"text": {"expr": "if(hover.book != -10000, hover.book, '')"}},
+      "layer": [
+        {
+          "mark": {"type": "bar", "clip": true, "height": {"band": 1}},
+          "encoding": {
+            "x": {
+              "field": "start_verse",
+              "type": "quantitative",
+              "title": "Verse",
+              "scale": {"domain": {"param": "hoverextents"}, "domainMin": 0},
+              "axis": null
+            },
+            "x2": {"field": "display_verse_index", "type": "quantitative"},
+            "color": {
+              "field": "chapter_color",
+              "type": "nominal",
+              "sort": null,
+              "legend": null,
+              "scale": {"scheme": "category20"}
+            },
+            "tooltip": [{"field": "title", "type": "nominal"}],
+            "href": {"field": "url", "type": "nominal"}
+          }
+        },
+        {
+          "mark": "text",
+          "transform": [
+            {
+              "calculate": "(datum.start_verse + datum.display_verse_index) / 2",
+              "as": "label_position"
+            }
+          ],
+          "encoding": {
+            "x": {
+              "field": "label_position",
+              "type": "quantitative",
+              "scale": {"domain": {"param": "hoverextents"}, "domainMin": 0}
+            },
+            "text": {
+              "condition": {"test": "datum.verses > 9", "field": "chapter"}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {}
+};
+    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+  </script>
+</body>
+</html>
