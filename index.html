@@ -83,7 +83,7 @@
           "field": "start_verse",
           "type": "quantitative",
           "title": "Verse",
-          "scale": {"domainMax": 30540},
+          "scale": {"domainMax": 31102},
           "axis": null
         },
         "x2": {"field": "display_verse_index", "type": "quantitative"},
@@ -139,7 +139,7 @@
               "scale": {"domain": {"param": "hoverextents"}}
             },
             "text": {
-              "condition": {"test": "datum.verses > 9", "field": "chapter"}
+              "condition": {"test": "((datum.verses / (2 * focusradius)) * containerSize()[0]) > floor((log(100 * datum.verses)/log(10))) * 7", "field": "chapter"}
             }
           }
         }
