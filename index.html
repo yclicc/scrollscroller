@@ -13,6 +13,17 @@
 <body>
   <div id="vis" />
   <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var version = urlParams.get("version");
+    if (version == null) {
+      version = 'NIVUK';
+    }
+    var oldtestamentorder = urlParams.get("oldtestamentorder");
+    if (oldtestamentorder == null) {
+      oldtestamentorder = 'Christian Traditional';
+    }
+
     const spec = {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "data": {
@@ -20,7 +31,7 @@
   },
   "title": {
     "text": "Bible Overview",
-    "subtitle": "Hover over top chart to zoom in on bottom. Click bottom chart to open on BibleGateway. (Shift-click to open in new tab)."
+    "subtitle": "Hover over top chart to zoom in on bottom. Click bottom chart to open on BibleGateway. (Ctrl-click to open in new tab)."
   },
   "transform": [
     {
@@ -36,7 +47,7 @@
       "as": "chapter_color"
     },
     {
-      "calculate": "'https://www.biblegateway.com/passage/?search=' + datum.title + '&version=' + bibleversion",
+      "calculate": "'https://www.biblegateway.com/passage/?search=' + datum.title + '&version=' + version",
       "as": "url"
     }
   ],
@@ -47,12 +58,13 @@
         "name": "Old Testament Order ",
         "input": "select",
         "options": ["Christian Traditional", "Hebrew TaNaKh"]
-      }
+      },
+      "value": oldtestamentorder
     },
     {
-      "name": "bibleversion",
+      "name": "version",
       "bind": {"name": "Bible Version Link ", "input": "text"},
-      "value": "NIVUK"
+      "value": version
     },
     {
       "name": "hover",
@@ -148,7 +160,25 @@
   ],
   "config": {}
 };
-    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+
+    function signalUpdate(name, state) {
+      let stateObj = {
+        oldtestamentorder: oldtestamentorder,
+        version: version
+      };
+      stateObj[name] = state;
+      oldtestamentorder = stateObj.oldtestamentorder;
+      version = stateObj.version;
+      history.pushState(stateObj, "", "?oldtestamentorder=" + stateObj.oldtestamentorder + "&version=" + stateObj.version)
+    };
+
+    function onLoad(result) {
+      result.view.addSignalListener("oldtestamentorder", signalUpdate);
+      result.view.addSignalListener("version", signalUpdate);
+      console.log(result)
+    }
+
+    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(onLoad).catch(console.warn);
   </script>
 </body>
 </html>
