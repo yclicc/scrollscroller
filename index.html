@@ -169,7 +169,7 @@
       stateObj[name] = state;
       oldtestamentorder = stateObj.oldtestamentorder;
       version = stateObj.version;
-      history.pushState(stateObj, "", "?oldtestamentorder=" + stateObj.oldtestamentorder + "&version=" + stateObj.version)
+      history.replaceState(stateObj, "", "?oldtestamentorder=" + stateObj.oldtestamentorder + "&version=" + stateObj.version)
     };
 
     function onLoad(result) {
