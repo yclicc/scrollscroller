@@ -2,7 +2,7 @@
 ScrollScroller is a data visualisation of the whole Bible with links to BibleGateway when a chapter is clicked on. You can view it [here](https://yclicc.github.io/scrollscroller/). For documentation of the dataset behind it, see the data folder above.
 
 ### Usage
-Move your mouse (if using mobile (not recommended) you have to click) over the chart at the top to zoom in on a portion of the Bible. In the chart below, click on a chapter to open it in BibleGateway or use shift-click to open BibleGateway in a new tab. 
+Move your mouse (if using mobile (not recommended) you have to click) over the chart at the top to zoom in on a portion of the Bible. In the chart below, click on a chapter to open it in BibleGateway or use ctrl-click to open BibleGateway in a new tab. 
 
 You can select one (or more) translations to view by modifying the text field at the bottom. For example, "NIVUK,CCB,JLB" will open parallel New International Version (Anglicised), Chinese Contemporary Bible and Japanese Living Bible when clicking a chapter. 
 
